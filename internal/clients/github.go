@@ -27,6 +27,12 @@ const (
 	errUnmarshalCredentials = "cannot unmarshal github credentials as JSON"
 )
 
+const (
+	keyBaseURL = "base_url"
+	keyOwner   = "owner"
+	keyToken   = "token"
+)
+
 // TerraformSetupBuilder builds Terraform a terraform.SetupFn function which
 // returns Terraform provider setup configuration
 func TerraformSetupBuilder(version, providerSource, providerVersion string) terraform.SetupFn {
@@ -63,10 +69,16 @@ func TerraformSetupBuilder(version, providerSource, providerVersion string) terr
 		}
 
 		// Set credentials in Terraform provider configuration.
-		/*ps.Configuration = map[string]any{
-			"username": creds["username"],
-			"password": creds["password"],
-		}*/
+		ps.Configuration = map[string]any{}
+		if v, ok := creds[keyBaseURL]; ok {
+			ps.Configuration[keyBaseURL] = v
+		}
+		if v, ok := creds[keyOwner]; ok {
+			ps.Configuration[keyOwner] = v
+		}
+		if v, ok := creds[keyToken]; ok {
+			ps.Configuration[keyToken] = v
+		}
 		return ps, nil
 	}
 }
